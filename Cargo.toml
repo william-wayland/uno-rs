@@ -1,0 +1,7 @@
+[package]
+name = "uno"
+version = "0.1.0"
+authors = ["William Wayland <william.wayland@griffithuni.edu.au>"]
+
+[dependencies]
+rand = "*"
