@@ -6,7 +6,7 @@
 use std::fmt;
 
 extern crate rand;
-use rand::Rng;
+use rand::{Rng, thread_rng};
 
 #[derive(Debug)]
 enum Colour {
@@ -46,6 +46,14 @@ impl Deck {
     fn new() -> Deck {
         let mut cards: Vec<Card> = Vec::with_capacity(108);
 
+        Deck::generate_cards(&mut cards);
+
+        rand::thread_rng().shuffle(&mut cards);
+
+        Deck{cards}
+    }
+
+    fn generate_cards(cards: &mut Vec<Card>) {
         for i in 0..=9 {
             cards.push(Card::new(Some(Colour::Red), Some(i), CardType::Number));
             cards.push(Card::new(Some(Colour::Green), Some(i), CardType::Number));
@@ -78,18 +86,22 @@ impl Deck {
             cards.push(Card::new(None, None, CardType::Wild));
             cards.push(Card::new(None, None, CardType::WildFour));
         }
-
-        rand::thread_rng().shuffle(&mut cards);
-
-        Deck{cards}
     }
 
     fn new_hand(&mut self) -> Vec<Card> {
         let mut hand: Vec<Card> = Vec::with_capacity(7);
-        for _ in 0..=6 {
-            hand.push(self.cards.pop().unwrap());
-        }
+        self.fill_with_cards(&mut hand, 7);
         hand
+    }
+
+    fn get_card(&mut self) -> Card {
+        self.cards.pop().unwrap()
+    }
+
+    fn fill_with_cards(&mut self, input: &mut Vec<Card>, number_of_cards: u8) {
+        for _ in 0..number_of_cards {
+            input.push(self.cards.pop().unwrap());
+        }
     }
 }
 
@@ -105,17 +117,15 @@ impl Player {
     }
 
     fn draw(&mut self, deck: &mut Deck, number_to_draw: u8) {
-        for _ in 0..number_to_draw {
-            self.hand.push(deck.cards.pop().unwrap());
-        }
+        deck.fill_with_cards(&mut self.hand, number_to_draw);
     }
 }
 
 impl fmt::Display for Player {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Player {}\n", self.id)?;
-        for card in self.hand.iter() {
-            write!(f, "{}\n", card)?;
+        for (i, card) in self.hand.iter().enumerate() {
+            write!(f, "{}: {}\n", i, card)?;
         }
         write!(f, "\n")
     }
@@ -124,13 +134,76 @@ impl fmt::Display for Player {
 #[derive(Debug)]
 struct Game {
     players: Vec<Player>,
+    deck: Deck,
+    stack: Vec<Card>,
+    turn: u8,
+    turn_direction: bool,
+}
+
+impl Game {
+    fn new(number_of_players: u8) -> Game {
+        //make Deck
+
+        let mut deck = Deck::new();
+
+        // make players
+        let mut players: Vec<Player> = Vec::with_capacity(number_of_players as usize);
+        for id in 0..number_of_players {
+            players.push(Player::new(id, &mut deck));
+        }
+
+        // set turn to something random
+        let turn: u8 = thread_rng().gen::<u8>() % number_of_players;
+
+        let mut stack: Vec<Card> = Vec::with_capacity(30);
+        stack.push(deck.get_card());
+
+        let turn_direction = false;
+
+        Game{players, stack, deck, turn, turn_direction}
+    }
+
+
+    fn next_turn(&mut self) {
+        if self.turn_direction {
+            self.turn = (self.turn + 1) % self.players.len() as u8;
+        }
+        else {
+            // Underflow protection.
+           if self.turn == 0 {
+               self.turn = (self.players.len() - 1 )as u8;
+           }
+           else {
+               self.turn -= 1;
+           }
+        }
+    }
+}
+
+impl fmt::Display for Game {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+
+        //for player in self.players.iter() {
+        //    write!(f, "{}\n", player)?;
+        //}
+
+        // Now, it should always have something on the stack.
+        write!(f, "Top of stack: {}\n", self.stack[self.stack.len() - 1])?;
+        write!(f, "Turn direction: {}\n", self.turn_direction);
+        write!(f, "Turn: {}\n", self.turn)
+    }
 }
 
 
 fn main() {
-    let mut deck = Deck::new();
-    let mut player1 = Player::new(1, &mut deck);
-    println!("{}", player1);
-    player1.draw(&mut deck, 3);
-    println!("{}", player1);
+
+    let mut game = Game::new(4);
+    println!("{}", game);
+    game.next_turn();
+    println!("{}", game);
+    game.next_turn();
+    println!("{}", game);
+    game.next_turn();
+    println!("{}", game);
+
 }
