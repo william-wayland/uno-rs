@@ -116,6 +116,7 @@ impl Player {
         Player{id: id, hand: deck.new_hand()}
     }
 
+    #[allow(dead_code)]
     fn draw(&mut self, deck: &mut Deck, number_to_draw: u8) {
         deck.fill_with_cards(&mut self.hand, number_to_draw);
     }
@@ -123,11 +124,11 @@ impl Player {
 
 impl fmt::Display for Player {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Player {}\n", self.id)?;
+        writeln!(f, "Player {}", self.id)?;
         for (i, card) in self.hand.iter().enumerate() {
-            write!(f, "{}: {}\n", i, card)?;
+            writeln!(f, "{}: {}", i, card)?;
         }
-        write!(f, "\n")
+        writeln!(f)
     }
 }
 
@@ -188,9 +189,9 @@ impl fmt::Display for Game {
         //}
 
         // Now, it should always have something on the stack.
-        write!(f, "Top of stack: {}\n", self.stack[self.stack.len() - 1])?;
-        write!(f, "Turn direction: {}\n", self.turn_direction);
-        write!(f, "Turn: {}\n", self.turn)
+        writeln!(f, "Top of stack: {}", self.stack[self.stack.len() - 1])?;
+        writeln!(f, "Turn direction: {}", self.turn_direction)?;
+        writeln!(f, "Turn: {}", self.turn)
     }
 }
 
