@@ -4,11 +4,14 @@
 **/
 
 use std::fmt;
+use std::io::Write;
 
 extern crate rand;
 use rand::{Rng, thread_rng};
 
 fn read_line() -> String {
+    print!("> ");
+    std::io::stdout().flush().unwrap();
     let mut input = String::new();
     std::io::stdin().read_line(&mut input).unwrap();
     input.pop();
@@ -172,6 +175,7 @@ impl Game {
                 2 // TODO: handle None case.
             }
         };
+        println!();
 
         let mut players: Vec<Player> = Vec::with_capacity(number_of_players as usize);
         for id in 0..number_of_players {
@@ -180,8 +184,6 @@ impl Game {
             println!("Welcome {}.\n", input);
             players.push(Player::new(id, input, &mut deck));
         }
-
-
 
         // set turn to something random
         let turn: u8 = thread_rng().gen::<u8>() % number_of_players;
