@@ -8,6 +8,13 @@ use std::fmt;
 extern crate rand;
 use rand::{Rng, thread_rng};
 
+fn read_line() -> String {
+    let mut input = String::new();
+    std::io::stdin().read_line(&mut input).unwrap();
+    input.pop();
+    input
+}
+
 #[derive(Debug)]
 enum Colour {
     Red, Green, Blue, Yellow
@@ -108,16 +115,24 @@ impl Deck {
 #[derive(Debug)]
 struct Player {
     id: u8,
+    name: String,
     hand: Vec<Card>,
 }
 
 impl Player {
-    fn new(id: u8, deck: &mut Deck) -> Player {
-        Player{id: id, hand: deck.new_hand()}
+    fn new(id: u8, name: String, deck: &mut Deck) -> Player {
+        Player{id: id, name: name, hand: deck.new_hand()}
     }
 
     fn draw(&mut self, deck: &mut Deck, number_to_draw: u8) {
         deck.fill_with_cards(&mut self.hand, number_to_draw);
+    }
+
+    fn has_cards(&mut self) -> bool{
+        match self.hand.len() {
+            0 => true,
+            _ => false,
+        }
     }
 }
 
@@ -141,16 +156,32 @@ struct Game {
 }
 
 impl Game {
-    fn new(number_of_players: u8) -> Game {
+    fn new() -> Game {
         //make Deck
 
         let mut deck = Deck::new();
 
-        // make players
+        // =============
+        // Introduce Players
+        // =============
+        println!("How many players?");
+        let input = read_line();
+        let number_of_players: u8 = match input.parse() {
+            Ok(n) => n,
+            Err(_) => {
+                2 // TODO: handle None case.
+            }
+        };
+
         let mut players: Vec<Player> = Vec::with_capacity(number_of_players as usize);
         for id in 0..number_of_players {
-            players.push(Player::new(id, &mut deck));
+            println!("Player's {} name?", id + 1u8);
+            let input = read_line();
+            println!("Welcome {}.\n", input);
+            players.push(Player::new(id, input, &mut deck));
         }
+
+
 
         // set turn to something random
         let turn: u8 = thread_rng().gen::<u8>() % number_of_players;
@@ -162,7 +193,6 @@ impl Game {
 
         Game{players, stack, deck, turn, turn_direction}
     }
-
 
     fn next_turn(&mut self) {
         if self.turn_direction {
@@ -177,6 +207,34 @@ impl Game {
                self.turn -= 1;
            }
         }
+    }
+
+    fn check_winner(&mut self) -> Option<u8> {
+        match self.players[self.turn as usize].has_cards() {
+            true => Some(self.turn),
+            false => None,
+        }
+    }
+
+    fn game_loop(&mut self) -> u8 {
+        //
+
+        loop {
+
+            // TODO: User input
+
+            // TODO: Implement user input.
+            
+            // After each turn, check for a winner.
+            match self.check_winner() {
+                Some(turn) => return self.turn,
+                None => self.next_turn(),
+            };
+        }
+    }
+
+    fn current_player(&self) -> String {
+        self.players[self.turn as usize].name.clone()
     }
 }
 
@@ -197,13 +255,15 @@ impl fmt::Display for Game {
 
 fn main() {
 
-    let mut game = Game::new(4);
-    println!("{}", game);
+    let mut game = Game::new();
+    println!("{}", game.current_player());
     game.next_turn();
-    println!("{}", game);
+    println!("{}", game.current_player());
     game.next_turn();
-    println!("{}", game);
+    println!("{}", game.current_player());
     game.next_turn();
-    println!("{}", game);
+    println!("{}", game.current_player());
+
+
 
 }
