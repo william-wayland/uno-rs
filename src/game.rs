@@ -83,60 +83,54 @@ impl Game {
 
     pub fn game_loop(mut self) -> u8 {
         loop {
+            // ======
+            // The start of a new turn.
+            // ======
             self.players[self.turn as usize].print_hand();
             println!("Pick a card, or enter \'s\' to skip turn");
             println!();
             println!("The top of the stack is a {}", self.stack[self.stack.len() - 1]);
-            // ====
-            // User input
-            // ===
-            let mut i: usize = 0;
             println!();
+
+            //====
+            // Checking user input
+            //===
             loop {
-                let (cards, index) = match self.players[self.turn as usize].choose_card() {
-                    Some((cards, index)) => (cards, index),
-                    None => (&[] as &[Card], 0),
-                };
+                if let Some(index) = self.players[self.turn as usize].choose_card() {
+                    if index == 0  { // TODO Replace with is_legal()
+                        // Legal move
+                        let card = self.players[self.turn as usize].take_card(index);
+                        self.stack.push(card);
 
-                // choose to not put down a card, must pick up one
-                if cards.len() == 0 {
-                    // Going back upto the loop
-                    i = 30;
-                    break;
-                } else {
-
-                }
-                
-
-                //TODO: is card a legal move?
-                // if move was legal (right now assuming being 0 is legal)
-                // Else, pick again
-                if index == 0 { // is_legal()
-
-                    break;
+                        match self.check_winner() {
+                            Some(_turn) => return self.turn,
+                            None => { 
+                                // ====
+                                //  Turn Finished
+                                // ====
+                                break;
+                            }
+                        };
+                        
+                    } else {
+                        // It was'nt a legal move
+                        println!("That wasn't a legal move. Try again.");
+                        continue;
+                    }
                 } 
-                println!("That card isn't legal. Choose another or pick up.");
+
+                else {
+                    //TODO loop this for multicard pickup (+2 and +4)
+                    let card = self.deck.get_card();
+                    println!("{} just picked up a {}", self.current_player_name(), card);
+                    self.players[self.turn as usize].give_card(card);
+                    
+                    // After drawing new card from deck, it's the next persons turn.
+                    break; 
+                }
             }
 
-            // Give card to player from top of deck.
-            // or
-            // Take the card the player took, and put it onto the stack.
-            if i == 30 {
-                // TODO: Implement giving card to player.
-            } else {
-                let card = self.players[self.turn as usize].take_card(i);
-                self.stack.push(card);
-            }
-            // =======
-            // Putting the card on top of the desk
-            // =======
-            
-            
-            // After each turn, check for a winner.
-            match self.check_winner() {
-                Some(_turn) => return self.turn,
-                None => self.next_turn(),
-            };
+            self.next_turn();
         }
     }
 

@@ -27,15 +27,15 @@ impl Player {
         }
     }
 
-    pub fn choose_card(&self) -> Option<(&[Card], u8)> {
+    pub fn choose_card(&self) -> Option<usize> {
         // TODO: Handle error
         
         let input = read_line();
         if input == "s" {
             return None;
         }
-        let input = input.parse().unwrap();
-        Some((&self.hand, input))
+        let input: usize = input.parse().unwrap();
+        Some(input)
     }
 
     pub fn take_card(&mut self, i: usize) -> Card {
@@ -48,6 +48,10 @@ impl Player {
 
     pub fn get_id(&self) -> u8 {
         self.id
+    }
+
+    pub fn give_card(&mut self, card: Card) {
+        self.hand.push(card);
     }
 
     pub fn print_hand(&self) {
