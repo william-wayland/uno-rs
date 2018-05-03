@@ -1,8 +1,24 @@
 # Uno
 
-This project is a WIP.
+This project is a WIP. It is currently in early development.
 
 Made my William Wayland, william.wayland@griffithuni.edu.au.
+
+# Get Uno Running 
+
+Get our Uno Card Game running with this simple three part program!
+
+1. Download [rustup](https://rustup.rs)
+2. Run `cargo run --release`
+3. Profit?
+
+Now this program can be all yours for only ten easy payments of $open_source. What a steal!
+
+# Versions and Roadmap
+
+The project is currently in version *0.1.1* . The project will make intermental changes until it reaches Version *1.0* .
+
+Version *1.x* will be released when all of the long term goals have been met (i.e. LAN Multiplayer, GUI, see the [Projects](https://github.com/gutrix/uno/projects/1) tab. Changes to *x* will most likely be bug fixes. I don't plan on working on this after 1.0 unless I need to fix something. 
 
 ## Legal Notice 
 

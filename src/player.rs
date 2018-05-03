@@ -16,10 +16,6 @@ impl Player {
         Player{id: id, name: name, hand: deck.new_hand()}
     }
 
-    pub fn draw(&mut self, deck: &mut Deck, number_to_draw: u8) {
-        deck.fill_with_cards(&mut self.hand, number_to_draw);
-    }
-
     pub fn has_cards(&self) -> bool {
         match self.hand.len() {
             0 => true,
@@ -50,10 +46,6 @@ impl Player {
         self.name.clone()
     }
 
-    pub fn get_id(&self) -> u8 {
-        self.id
-    }
-
     pub fn give_card(&mut self, card: Card) {
         self.hand.push(card);
     }
@@ -64,10 +56,6 @@ impl Player {
         for (i, ref x) in self.hand.iter().enumerate() {
             println!("{}: {}", i, x);
         }
-    }
-
-    pub fn test_cheat(&mut self) {
-        self.hand.clear();
     }
 
     pub fn pick_colour() -> Colour {
