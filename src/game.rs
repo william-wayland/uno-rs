@@ -248,10 +248,6 @@ impl Game {
     pub fn current_player_name(&mut self) -> String {
         self.players[self.turn as usize].get_name()
     }
-
-    pub fn current_player_id(&mut self) -> u8 {
-        self.players[self.turn as usize].get_id()
-    }
 }
 
 impl fmt::Display for Game {
