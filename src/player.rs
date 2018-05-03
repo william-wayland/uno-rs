@@ -38,6 +38,10 @@ impl Player {
         Some(input)
     }
 
+    pub fn peak_at_card(&self, index: usize) -> &Card {
+        &self.hand[index]
+    }
+
     pub fn take_card(&mut self, i: usize) -> Card {
         self.hand.remove(i)
     }
@@ -64,6 +68,24 @@ impl Player {
 
     pub fn test_cheat(&mut self) {
         self.hand.clear();
+    }
+
+    pub fn pick_colour() -> Colour {
+        println!("You put down a Wild Card. You need to pick a colour.");
+        println!("\t0. Red");
+        println!("\t1. Green");
+        println!("\t2. Blue");
+        println!("\t3. Yellow");
+        match read_line().parse().unwrap() {
+            0 => Colour::Red,
+            1 => Colour::Green,
+            2 => Colour::Blue,
+            3 => Colour::Yellow,
+            _ => {
+                //TODO Error handling
+                Colour::Red
+            }
+        }
     }
 }
 

@@ -13,6 +13,7 @@ pub struct Game {
     stack: Vec<Card>,
     turn: u8,
     turn_direction: bool,
+    pickups: Option<usize>
 }
 
 impl Game {
@@ -52,11 +53,12 @@ impl Game {
         // ========
         let mut stack: Vec<Card> = Vec::with_capacity(30);
         stack.push(deck.get_card());
+        let pickups = None;
 
         // ====
         // Let's play
         // ====
-        Game{players, stack, deck, turn, turn_direction}
+        Game{players, stack, deck, turn, turn_direction, pickups}
     }
 
     pub fn next_turn(&mut self) {
@@ -87,43 +89,99 @@ impl Game {
             // The start of a new turn.
             // ======
             self.players[self.turn as usize].print_hand();
-            println!("Pick a card, or enter \'s\' to skip turn");
+            match self.pickups {
+                Some(i)  => println!("\nWARNING: You're at risk of picking up {} cards.\nEnter a +pickup card to pass it or \'s\' to accept it.", i),
+                None => println!("Pick a card, or enter \'s\' to skip turn"),
+            };
             println!();
             println!("The top of the stack is a {}", self.stack[self.stack.len() - 1]);
             println!();
 
             //====
-            // Checking user input
+            // Handling user input
             //===
             loop {
                 if let Some(index) = self.players[self.turn as usize].choose_card() {
-                    if index == 0  { // TODO Replace with is_legal()
+                    let (is_legal, pickup_addition) = Game::is_legal_move(&self.stack[self.stack.len() - 1], self.players[self.turn as usize].peak_at_card(index), &self.pickups);
+                
+                    match self.pickups {
+                        Some(pickups) => {
+                            self.pickups = Some(pickups + pickup_addition);
+                        },
+                        None => {
+                            if pickup_addition > 0 {
+                                self.pickups = Some(pickup_addition);
+                            }
+                        },
+                    };
+
+                    if is_legal { 
                         // Legal move
-                        let card = self.players[self.turn as usize].take_card(index);
+                        let mut card = self.players[self.turn as usize].take_card(index);
+
+                        // ====
+                        // Card effects
+                        // ===
+
+                        match card.card_type {
+                            CardType::Reverse => self.turn_direction = !self.turn_direction,
+                            CardType::Skip => self.next_turn(), // other next turn after break at the break inner loop.
+                            CardType::DrawTwo => {}, // TODO implement extra pickup
+                            CardType::Wild => {
+                                card.colour = Player::pick_colour();
+                            },   
+                            CardType::WildFour => {
+                                card.colour = Player::pick_colour();
+                            }, 
+                            CardType::Number => {},  // Nothing. Added for completion
+                        };
+
                         self.stack.push(card);
 
                         match self.check_winner() {
                             Some(_turn) => return self.turn,
-                            None => { 
-                                // ====
-                                //  Turn Finished
-                                // ====
-                                break;
-                            }
+                            None => break,
                         };
-                        
-                    } else {
-                        // It was'nt a legal move
+                    } 
+                    
+                    else {
                         println!("That wasn't a legal move. Try again.");
                         continue;
                     }
+
                 } 
 
                 else {
+
                     //TODO loop this for multicard pickup (+2 and +4)
-                    let card = self.deck.get_card();
-                    println!("{} just picked up a {}", self.current_player_name(), card);
-                    self.players[self.turn as usize].give_card(card);
+                    match self.pickups {
+                        Some(i) => {
+                            for _ in 0..i {
+                                let card = self.deck.get_card();
+                                println!("{} just picked up a {}", self.current_player_name(), card);
+                                self.players[self.turn as usize].give_card(card);
+                            }
+                            self.pickups = None;
+
+                            // =====
+                            // The victom of a multipickup can go
+                            // =====
+                            let option_multipickup_victom = true;
+                            if option_multipickup_victom {
+                                println!("Your turn again, {}.", self.players[self.turn as usize].get_name());
+                                self.players[self.turn as usize].print_hand();
+                                println!();
+                                println!("The top of the stack is a {}", self.stack[self.stack.len() - 1]);
+                                println!();
+                                continue;
+                            }
+                        },
+                        None => {
+                            let card = self.deck.get_card();
+                            println!("{} just picked up a {}", self.current_player_name(), card);
+                            self.players[self.turn as usize].give_card(card);
+                        }
+                    }
                     
                     // After drawing new card from deck, it's the next persons turn.
                     break; 
@@ -131,6 +189,59 @@ impl Game {
             }
 
             self.next_turn();
+        }
+    }
+
+    // Returns (if_legal, +pickup, )
+    pub fn is_legal_move(stack: &Card, player: &Card, pickup: &Option<usize>) -> (bool, usize){
+        // TODO Should the move be allowed to happen?
+        // TODO chnage the colour of the card if it's black
+
+        match player.card_type {
+            CardType::WildFour => {
+                (true, 4)
+            },
+            CardType::Wild => {
+                if let Some(_) = &pickup {
+                    return (false, 0)
+                }
+                (true, 0)
+            },
+            CardType::DrawTwo => {
+                // Assuming right colour, can be placed on anything.
+                if stack.colour == player.colour {  
+                    (true, 2)
+                } else {
+                    (false, 0)
+                }
+            },
+            CardType::Reverse => {
+                 // Assuming right colour, can be placed on anything.
+                if stack.colour == player.colour || stack.card_type == CardType::Reverse {  
+                    (true, 0)
+                } else {
+                    (false, 0)
+                }
+            },
+            CardType::Skip => {
+                 // Assuming right colour, can be placed on anything.
+                if stack.colour == player.colour || stack.card_type == CardType::Skip {  
+                    (true, 0)
+                } else {
+                    (false, 0)
+                }
+            },
+            CardType::Number => {
+                if let Some(_) = &pickup {
+                    (false, 0)
+                } else {
+                    if stack.colour == player.colour || stack.number == player.number {  
+                        (true, 0)
+                    } else {
+                        (false, 0)
+                    }
+                }
+            },
         }
     }
 

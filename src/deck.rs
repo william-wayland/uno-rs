@@ -21,36 +21,36 @@ impl Deck {
 
     pub fn generate_cards(cards: &mut Vec<Card>) {
         for i in 0..=9 {
-            cards.push(Card::new(Some(Colour::Red), Some(i), CardType::Number));
-            cards.push(Card::new(Some(Colour::Green), Some(i), CardType::Number));
-            cards.push(Card::new(Some(Colour::Blue), Some(i), CardType::Number));
-            cards.push(Card::new(Some(Colour::Yellow), Some(i), CardType::Number));
+            cards.push(Card::new(Colour::Red, Some(i), CardType::Number));
+            cards.push(Card::new(Colour::Green, Some(i), CardType::Number));
+            cards.push(Card::new(Colour::Blue, Some(i), CardType::Number));
+            cards.push(Card::new(Colour::Yellow, Some(i), CardType::Number));
         }
         for i in 1..=9 {
-            cards.push(Card::new(Some(Colour::Red), Some(i), CardType::Number));
-            cards.push(Card::new(Some(Colour::Green), Some(i), CardType::Number));
-            cards.push(Card::new(Some(Colour::Blue), Some(i), CardType::Number));
-            cards.push(Card::new(Some(Colour::Yellow), Some(i), CardType::Number));
+            cards.push(Card::new(Colour::Red, Some(i), CardType::Number));
+            cards.push(Card::new(Colour::Green, Some(i), CardType::Number));
+            cards.push(Card::new(Colour::Blue, Some(i), CardType::Number));
+            cards.push(Card::new(Colour::Yellow, Some(i), CardType::Number));
         }
         for _ in 0..2 {
-            cards.push(Card::new(Some(Colour::Red), None, CardType::Reverse));
-            cards.push(Card::new(Some(Colour::Green), None, CardType::Reverse));
-            cards.push(Card::new(Some(Colour::Blue), None, CardType::Reverse));
-            cards.push(Card::new(Some(Colour::Yellow), None, CardType::Reverse));
+            cards.push(Card::new(Colour::Red, None, CardType::Reverse));
+            cards.push(Card::new(Colour::Green, None, CardType::Reverse));
+            cards.push(Card::new(Colour::Blue, None, CardType::Reverse));
+            cards.push(Card::new(Colour::Yellow, None, CardType::Reverse));
 
-            cards.push(Card::new(Some(Colour::Red), None, CardType::Skip));
-            cards.push(Card::new(Some(Colour::Green), None, CardType::Skip));
-            cards.push(Card::new(Some(Colour::Blue), None, CardType::Skip));
-            cards.push(Card::new(Some(Colour::Yellow), None, CardType::Skip));
+            cards.push(Card::new(Colour::Red, None, CardType::Skip));
+            cards.push(Card::new(Colour::Green, None, CardType::Skip));
+            cards.push(Card::new(Colour::Blue, None, CardType::Skip));
+            cards.push(Card::new(Colour::Yellow, None, CardType::Skip));
 
-            cards.push(Card::new(Some(Colour::Red), None, CardType::DrawTwo));
-            cards.push(Card::new(Some(Colour::Green), None, CardType::DrawTwo));
-            cards.push(Card::new(Some(Colour::Blue), None, CardType::DrawTwo));
-            cards.push(Card::new(Some(Colour::Yellow), None, CardType::DrawTwo));
+            cards.push(Card::new(Colour::Red, None, CardType::DrawTwo));
+            cards.push(Card::new(Colour::Green, None, CardType::DrawTwo));
+            cards.push(Card::new(Colour::Blue, None, CardType::DrawTwo));
+            cards.push(Card::new(Colour::Yellow, None, CardType::DrawTwo));
         }
         for _ in 0..3 {
-            cards.push(Card::new(None, None, CardType::Wild));
-            cards.push(Card::new(None, None, CardType::WildFour));
+            cards.push(Card::new(Colour::Black, None, CardType::Wild));
+            cards.push(Card::new(Colour::Black, None, CardType::WildFour));
         }
     }
 
