@@ -24,11 +24,13 @@ Version *1.x* will be released when all of the long term goals have been met (i.
 
 Get our Uno Card Game running with this simple three part program!
 
-1. Download [rustup](https://rustup.rs)
+1. Download [rustup](https://rustup.rs) and set up Rust Nightly 1.27.0 or higher *
 2. Run `cargo run --release`
 3. Profit?
 
 Now this program can be all yours for only ten easy payments of $open_source. What a steal!
+
+*May not work for newer or older versions of Rust. Who knows what the future may hold. 
 
 # Versions and Roadmap
 
