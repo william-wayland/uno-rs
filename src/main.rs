@@ -5,27 +5,21 @@
 
 extern crate rand;
 
-use std::fmt;
-use std::io::Write;
-
 mod card;
 mod deck;
 mod player;
 mod game;
+mod util;
 
 use game::*;
 
 fn main() {
 
-    let mut game = Game::new();
-    println!("{}", game.current_player());
-    game.next_turn();
-    println!("{}", game.current_player());
-    game.next_turn();
-    println!("{}", game.current_player());
-    game.next_turn();
-    println!("{}", game.current_player());
+    let game = Game::new();
+    let winner = game.game_loop();
 
+    // TODO congrats winner
 
+    println!("Winner: {}", winner);
 
 }

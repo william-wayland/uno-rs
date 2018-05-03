@@ -1,5 +1,5 @@
 extern crate rand;
-use rand::{Rng, thread_rng};
+use rand::{Rng};
 
 use card::*;
 

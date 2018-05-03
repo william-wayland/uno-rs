@@ -25,6 +25,21 @@ impl Card {
 
 impl fmt::Display for Card {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "\tType: {:?}, Number: {:?}, Colour: {:?}", self.card_type, self.number, self.colour)
+
+
+        if let Some(ref number) = self.number  {
+            if let Some(ref colour) = self.colour {
+                write!(f, "{:?} {:?}", colour, number)
+            } else {
+                write!(f, "")
+            }
+        } 
+        else if let Some(ref colour) = self.colour {
+            write!(f, "{:?} {:?}", colour, self.card_type)
+        } 
+        else {
+            write!(f, "A {:?}", self.card_type)
+        }
+
     }
 }
