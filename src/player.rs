@@ -24,14 +24,17 @@ impl Player {
     }
 
     pub fn choose_card(&self) -> Option<usize> {
-        // TODO: Handle error
-        
-        let input = read_line();
-        if input == "s" {
-            return None;
-        }
-        let input: usize = input.parse().unwrap();
-        Some(input)
+        loop {
+            let input = read_line();
+            if input == "s" {
+                return None;
+            } else {
+                match input.parse::<usize>() {
+                    Ok(input) => return Some(input),
+                    Err(_e) => println!("That wasn't a number, was it?"),
+                };
+            }
+        }           
     }
 
     pub fn peak_at_card(&self, index: usize) -> &Card {

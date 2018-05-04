@@ -105,7 +105,6 @@ impl Game {
     }
 
     fn handle_legal_move(&mut self, index: usize) {
-        // Legal move
         let mut card = self.players[self.turn as usize].take_card(index);
 
         match card.card_type {
@@ -129,11 +128,9 @@ impl Game {
                     println!("{} just picked up a {}", self.current_player_name(), card);
                     self.players[self.turn as usize].give_card(card);
                 }
+
                 self.pickups = None;
 
-                // =====
-                // The victom of a multipickup can go
-                // =====
                 let option_multipickup_victom = true;
                 if option_multipickup_victom {
                     println!("Your turn again, {}.", self.players[self.turn as usize].get_name());
@@ -156,7 +153,7 @@ impl Game {
         }
     }
 
-    pub fn game_loop(mut self) -> u8 {
+    pub fn game_loop(mut self) -> String {
         loop {
             // ======
             // The start of a new turn.
@@ -179,13 +176,12 @@ impl Game {
                         self.handle_legal_move(index);
 
                          match self.check_winner() {
-                            Some(_) => return self.turn,
+                            Some(_) => return self.players[self.turn as usize].get_name(),
                             None => break, // Next turn
                         };
                     } 
                     else {
                         println!("That wasn't a legal move. Try again.");
-                        continue; // choose another card
                     }
                 } 
                 else {
