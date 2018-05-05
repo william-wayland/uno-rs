@@ -89,7 +89,7 @@ impl Game {
     }
 
 
-    fn calculate_pickup(&self, pickup_addition: usize) -> Option<usize> {
+    fn addon_pickup(&self, pickup_addition: usize) -> Option<usize> {
         match self.pickups {
             Some(pickups) => {
                 Some(pickups + pickup_addition)
@@ -110,10 +110,8 @@ impl Game {
         match card.card_type {
             CardType::Reverse => self.turn_direction = !self.turn_direction,
             CardType::Skip => self.next_turn(), // other next turn after break at the break inner loop.
-            CardType::DrawTwo => {}, // TODO implement extra pickup
-            CardType::Wild | CardType::WildFour => {
-                card.colour = Player::pick_colour();
-            }, 
+            CardType::DrawTwo => {}, 
+            CardType::Wild | CardType::WildFour => card.colour = Player::pick_colour();
             CardType::Number => {},  // Nothing. Added for completion
         };
 
@@ -170,9 +168,9 @@ impl Game {
             loop { // Breaking out of this loop means a new turn.
                 if let Some(index) = self.players[self.turn as usize].choose_card() {
                     let (is_legal, pickup_addition) = Game::is_legal_move(&self.stack[self.stack.len() - 1], self.players[self.turn as usize].peak_at_card(index), &self.pickups);
-                    self.pickups = self.calculate_pickup(pickup_addition);
-
+                    
                     if is_legal { 
+                        self.pickups = self.addon_pickup(pickup_addition);
                         self.handle_legal_move(index);
 
                          match self.check_winner() {
