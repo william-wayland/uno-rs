@@ -22,6 +22,7 @@ pub struct Game {
 }
 
 impl Game {
+
     pub fn new() -> Game {
 
         let mut deck = Deck::new();
@@ -30,15 +31,9 @@ impl Game {
         // Introduce Players
         // =============
         println!("How many players?");
-        let input = read_line();
-        let number_of_players: u8 = match input.parse() {
-            Ok(n) => n,
-            Err(_) => {
-                2 // TODO: handle None case.
-            }
-        };
+        let number_of_players = Game::handle_number_of_players(8u8); // TODO: Config
         println!();
-
+    
         let mut players: Vec<Player> = Vec::with_capacity(number_of_players as usize);
         for id in 0..number_of_players {
             println!("Player {} name?", id + 1u8);
@@ -88,7 +83,6 @@ impl Game {
         }
     }
 
-
     fn addon_pickup(&self, pickup_addition: usize) -> Option<usize> {
         match self.pickups {
             Some(pickups) => {
@@ -111,7 +105,7 @@ impl Game {
             CardType::Reverse => self.turn_direction = !self.turn_direction,
             CardType::Skip => self.next_turn(), // other next turn after break at the break inner loop.
             CardType::DrawTwo => {}, 
-            CardType::Wild | CardType::WildFour => card.colour = Player::pick_colour();
+            CardType::Wild | CardType::WildFour => card.colour = Player::pick_colour(),
             CardType::Number => {},  // Nothing. Added for completion
         };
 
@@ -129,17 +123,17 @@ impl Game {
 
                 self.pickups = None;
 
-                let option_multipickup_victom = true;
-                if option_multipickup_victom {
+                let option_multipickup_victim = true;
+                if option_multipickup_victim {
                     println!("Your turn again, {}.", self.players[self.turn as usize].get_name());
                     self.players[self.turn as usize].print_hand();
 
                     println!();
                     println!("The top of the stack is a {}", self.stack[self.stack.len() - 1]);
                     println!();
-                    Turn::Again
-                } else {
                     Turn::New
+                } else {
+                    Turn::Again
                 }
             },
             None => {
@@ -147,6 +141,29 @@ impl Game {
                 println!("{} just picked up a {}", self.current_player_name(), card);
                 self.players[self.turn as usize].give_card(card);
                 Turn::New
+            }
+        }
+    }
+
+    fn handle_number_of_players(max: u8) -> u8 {
+        loop {
+            let input = read_line();
+            let input: u8 = match input.parse() {
+                Ok(n) => n,
+                Err(_) => {
+                    println!("That doesn't appear to be a number. Try again.");
+                    continue;
+                }
+            };
+
+            if input > max {
+                println!("The maximum number of players is set to {}. Try again.", max);
+                continue;
+            } else if input < 2 {
+                println!("The minimum number of players is set to 2. Try again.");
+                continue;
+            } else {
+                return input
             }
         }
     }
@@ -159,7 +176,7 @@ impl Game {
             self.players[self.turn as usize].print_hand();
             match self.pickups {
                 Some(i)  => println!("\nWARNING: You're at risk of picking up {} cards.\nEnter a +pickup card to pass it or \'s\' to accept it.", i),
-                None => println!("Pick a card, or enter \'s\' to skip turn"),
+                None => println!("Pick a card, or enter \'s\' to skip turn and pick up a card."),
             };
             println!();
             println!("The top of the stack is a {}", self.stack[self.stack.len() - 1]);
