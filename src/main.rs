@@ -1,6 +1,6 @@
 /**
     @Auther         William Wayland
-    @Auther Contact william.wayland@griffithuni.edu.au
+    @Auther Contact w.g.wayland@gmail.com
 **/
 
 extern crate rand;

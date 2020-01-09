@@ -1,5 +1,5 @@
 extern crate rand;
-use rand::{Rng};
+use rand::prelude::*;
 
 use card::*;
 
@@ -14,7 +14,8 @@ impl Deck {
 
         Deck::generate_cards(&mut cards);
 
-        rand::thread_rng().shuffle(&mut cards);
+        let mut rng = rand::thread_rng();
+        cards.shuffle(&mut rng);
 
         Deck{cards}
     }

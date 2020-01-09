@@ -1,7 +1,7 @@
 [package]
 name = "uno"
-version = "0.1.1"
-authors = ["William Wayland <william.wayland@griffithuni.edu.au>"]
+version = "0.2.0"
+authors = ["William Wayland <w.g.wayland@gmail.com>"]
 
 [dependencies]
-rand = "*"
+rand = "0.7.2"
