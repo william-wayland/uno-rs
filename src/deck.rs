@@ -60,13 +60,19 @@ impl Deck {
         hand
     }
 
-    pub fn get_card(&mut self) -> Card {
-        self.cards.pop().unwrap()
+    pub fn get_card(&mut self) -> Option<Card> {
+        self.cards.pop()
     }
 
+    pub fn reshuffle_deck(&mut self, discard_pile: &mut Vec<Card>) {
+        println!("Resuffing started {:?}", discard_pile);
+        self.cards.append(discard_pile);
+    }
+
+    // Fails if deck has run out of cards
     pub fn fill_with_cards(&mut self, input: &mut Vec<Card>, number_of_cards: u8) {
         for _ in 0..number_of_cards {
-            input.push(self.cards.pop().unwrap());
+            input.push(Deck::get_card(self).unwrap());
         }
     }
 }

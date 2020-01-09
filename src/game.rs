@@ -51,8 +51,8 @@ impl Game {
         // ========
         // First card on the deck
         // ========
-        let mut stack: Vec<Card> = Vec::with_capacity(30);
-        stack.push(deck.get_card());
+        let mut stack: Vec<Card> = Vec::with_capacity(106);
+        stack.push(deck.get_card().unwrap());
         let pickups = None;
 
         // ====
@@ -116,7 +116,7 @@ impl Game {
         match self.pickups {
             Some(i) => {
                 for _ in 0..i {
-                    let card = self.deck.get_card();
+                    let card = self.pick_up_card();
                     println!("{} just picked up a {}", self.current_player_name(), card);
                     self.players[self.turn as usize].give_card(card);
                 }
@@ -137,7 +137,7 @@ impl Game {
                 }
             },
             None => {
-                let card = self.deck.get_card();
+                let card = self.pick_up_card();
                 println!("{} just picked up a {}", self.current_player_name(), card);
                 self.players[self.turn as usize].give_card(card);
                 Turn::New
@@ -179,12 +179,12 @@ impl Game {
                 None => println!("Pick a card, or enter \'s\' to skip turn and pick up a card."),
             };
             println!();
-            println!("The top of the stack is a {}", self.stack[self.stack.len() - 1]);
+            println!("The top of the stack is a {}", self.top_card());
             println!();
 
             loop { // Breaking out of this loop means a new turn.
                 if let Some(index) = self.players[self.turn as usize].choose_card() {
-                    let (is_legal, pickup_addition) = Game::is_legal_move(&self.stack[self.stack.len() - 1], self.players[self.turn as usize].peak_at_card(index), &self.pickups);
+                    let (is_legal, pickup_addition) = Game::is_legal_move(self.top_card(), self.current_player().peak_at_card(index), &self.pickups);
                     
                     if is_legal { 
                         self.pickups = self.addon_pickup(pickup_addition);
@@ -200,6 +200,10 @@ impl Game {
                     }
                 } 
                 else {
+                    if self.can_current_player_move() {
+                        println!("You don't need to skip! You must play a card.");
+                        continue;
+                    }
                     match self.handle_skip_move() {
                         Turn::Again => continue,
                         Turn::New => break,
@@ -215,6 +219,7 @@ impl Game {
     pub fn is_legal_move(stack: &Card, player: &Card, pickup: &Option<usize>) -> (bool, usize){
         // TODO Should the move be allowed to happen?
         // TODO chnage the colour of the card if it's black
+
 
         match player.card_type {
             CardType::WildFour => {
@@ -265,7 +270,41 @@ impl Game {
     }
 
     pub fn current_player_name(&mut self) -> String {
-        self.players[self.turn as usize].get_name()
+        self.current_player().get_name()
+    }
+
+    // Deck::get_card should only give None when it has run out of card to give
+    // Thus, we need to reshuffle the stack(-the top card) into the deck.
+    // Then we can take the card from the newly reshuffled deck.
+    pub fn pick_up_card(&mut self) -> Card {
+        match self.deck.get_card() {
+            Some(card) => card,
+            None => {
+                let top = self.stack.pop().unwrap();
+                self.deck.reshuffle_deck(&mut self.stack);
+                self.stack.push(top);
+                self.deck.get_card().unwrap()
+            }
+        }
+    }
+
+    pub fn can_current_player_move(&mut self) -> bool {
+        for i in 0..self.current_player().number_of_cards() {
+            let (legal, _) = Game::is_legal_move(self.top_card(), self.current_player().peak_at_card(i), &None);
+            if legal {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    pub fn current_player(&self) -> &Player {
+        &self.players[self.turn as usize]
+    }
+    
+
+    pub fn top_card(&self) -> &Card {
+        &self.stack[self.stack.len() - 1]
     }
 }
 
@@ -277,7 +316,8 @@ impl fmt::Display for Game {
         //}
 
         // Now, it should always have something on the stack.
-        writeln!(f, "Top of stack: {}", self.stack[self.stack.len() - 1])?;
+        // writeln!(f, "Top of stack: {}", self.stack[self.stack.len() - 1])?;
+        writeln!(f, "Stack: {:?}", self.stack)?;
         writeln!(f, "Turn direction: {}", self.turn_direction)?;
         writeln!(f, "Turn: {}", self.turn)
     }

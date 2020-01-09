@@ -41,6 +41,10 @@ impl Player {
         &self.hand[index]
     }
 
+    pub fn number_of_cards(&self) -> usize {
+        self.hand.len()
+    }
+
     pub fn take_card(&mut self, i: usize) -> Card {
         self.hand.remove(i)
     }
