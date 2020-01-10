@@ -30,14 +30,14 @@ impl fmt::Display for Card {
             Colour::Black => write!(f, "{:?} Card", self.card_type),
             _ => {
                 match self.card_type {
-                    CardType::WildFour => write!(f, "{:?} Wild +4 Card", self.colour),
-                    CardType::Wild => write!(f, "{:?} Wild Card", self.colour),
-                    CardType::Reverse => write!(f, "{:?} Reverse Card", self.colour),
-                    CardType::Skip => write!(f, "{:?} Skip Card", self.colour),
-                    CardType::DrawTwo => write!(f, "{:?} Draw Two Card", self.colour),
+                    CardType::WildFour => write!(f, "{:?} Wild +4", self.colour),
+                    CardType::Wild => write!(f, "{:?} Wild", self.colour),
+                    CardType::Reverse => write!(f, "{:?} Reverse", self.colour),
+                    CardType::Skip => write!(f, "{:?} Skip", self.colour),
+                    CardType::DrawTwo => write!(f, "{:?} Draw Two", self.colour),
                     CardType::Number => {
                         if let Some(number) = self.number { 
-                            write!(f, "{:?} {:?} Card", self.colour, number)?;
+                            write!(f, "{:?} {:?}", self.colour, number)?;
                         }
                         write!(f, "")
                     },

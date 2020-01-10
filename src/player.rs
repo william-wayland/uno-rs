@@ -30,7 +30,14 @@ impl Player {
                 return None;
             } else {
                 match input.parse::<usize>() {
-                    Ok(input) => return Some(input),
+                    Ok(input) => {
+                        if input < self.hand.len() {
+                            return Some(input)
+                        } else { 
+                            println!("Out of bounds. Choose a number in the list above.");
+                            continue; 
+                        }
+                    },
                     Err(_e) => println!("That wasn't a number, was it?"),
                 };
             }
@@ -71,16 +78,27 @@ impl Player {
         println!("\t1. Green");
         println!("\t2. Blue");
         println!("\t3. Yellow");
-        match read_line().parse().unwrap() {
-            0 => Colour::Red,
-            1 => Colour::Green,
-            2 => Colour::Blue,
-            3 => Colour::Yellow,
-            _ => {
-                //TODO Error handling
-                Colour::Red
-            }
-        }
+
+        loop {
+            match read_line().parse() {
+                Ok(i) => {
+                    match i {
+                        0 => return Colour::Red,
+                        1 => return Colour::Green,
+                        2 => return Colour::Blue,
+                        3 => return Colour::Yellow,
+                        _ => {
+                            println!("Out of bounds. Choose a number in the list above.");
+                            continue; 
+                        }
+                    }
+                }
+                Err(_) => {
+                    println!("That wasn't a number, was it?");
+                    continue; 
+                }
+            };
+        }   
     }
 }
 
