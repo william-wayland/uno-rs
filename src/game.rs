@@ -24,7 +24,6 @@ pub struct Game {
 impl Game {
 
     pub fn new() -> Game {
-
         let mut deck = Deck::new();
 
         // =============
@@ -36,7 +35,7 @@ impl Game {
     
         let mut players: Vec<Player> = Vec::with_capacity(number_of_players as usize);
         for id in 0..number_of_players {
-            println!("Player {} name?", id + 1u8);
+            println!("Player {} name?", id + 1u8); // People understand numbers starting from 1 better, so just... do that
             let input = read_line();
             println!("Welcome {}.\n", input);
             players.push(Player::new(id, input, &mut deck));
@@ -49,20 +48,27 @@ impl Game {
         let turn_direction = false;
 
         // ========
-        // First card on the deck
+        // First card on the deck (must have a colour)
         // ========
         let mut stack: Vec<Card> = Vec::with_capacity(106);
-        let first_card = deck.get_card().unwrap();
-        
-        // TODO IF FIRST CARD IS a pick a colour, then get another card
-
-        stack.push(first_card);
-        let pickups = None;
+        loop {
+            let card = deck.get_card().unwrap();
+            
+            match card.card_type {
+                CardType::Wild | CardType::WildFour => {
+                    stack.push(card);
+                },
+                _ => {
+                    stack.push(card);
+                    break;
+                }
+            };
+        }
 
         // ====
         // Let's play
         // ====
-        Game{players, stack, deck, turn, turn_direction, pickups}
+        Game{players, stack, deck, turn, turn_direction, pickups: None}
     }
 
     pub fn next_turn(&mut self) {
@@ -116,6 +122,9 @@ impl Game {
         self.stack.push(card);
     }
 
+    // If there are current pickups, handle that 
+    // Else check if the player should skip turn, and handle it. 
+    // Returns the turn direction -- TODO -- turn direction after pickups via game options
     fn handle_skip_move(&mut self) -> Option<Turn> {
         match self.pickups {
             Some(i) => {
@@ -126,7 +135,7 @@ impl Game {
                 }
 
                 self.pickups = None;
-                
+
                 return Some(Turn::New)   
             },
             None => {
@@ -243,7 +252,7 @@ impl Game {
             },
             CardType::DrawTwo => {
                 // Assuming right colour, can be placed on anything.
-                if stack.colour == player.colour {  
+                if stack.colour == player.colour || stack.card_type == CardType::DrawTwo {  
                     (true, 2)
                 } else {
                     (false, 0)

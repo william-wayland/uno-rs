@@ -1,4 +1,5 @@
 use std::fmt;
+use colored::*;
 
 #[derive(Debug, PartialEq)]
 pub enum CardType {
@@ -24,24 +25,49 @@ impl Card {
 }
 
 impl fmt::Display for Card {
+    
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-
         match self.colour {
-            Colour::Black => write!(f, "{:?} Card", self.card_type),
-            _ => {
+            Colour::Black => {
                 match self.card_type {
-                    CardType::WildFour => write!(f, "{:?} Wild +4", self.colour),
-                    CardType::Wild => write!(f, "{:?} Wild", self.colour),
-                    CardType::Reverse => write!(f, "{:?} Reverse", self.colour),
-                    CardType::Skip => write!(f, "{:?} Skip", self.colour),
-                    CardType::DrawTwo => write!(f, "{:?} Draw Two", self.colour),
+                    CardType::Wild => write!(f, "Wild"),
+                    CardType::WildFour => write!(f, "Wild +4"),
+                    _ => write!(f, "Something has gone terribly wrong."),
+                }
+            }
+            _ => {
+                let mut o = String::new();
+
+                match self.colour {
+                    Colour::Red => o = format!("{}{:?}", o, Colour::Red),
+                    Colour::Green => o = format!("{}{:?}", o, Colour::Green),
+                    Colour::Blue => o = format!("{}{:?}", o, Colour::Blue),
+                    Colour::Yellow => o = format!("{}{:?}", o, Colour::Yellow),
+                    _ => ()
+                };
+
+                match self.card_type {
+                    CardType::WildFour => o = format!("{} Wild +4", o),
+                    CardType::Wild => o = format!("{} Wild", o),
+                    CardType::Reverse => o = format!("{} Reverse", o),
+                    CardType::Skip => o = format!("{} Skip", o),
+                    CardType::DrawTwo => o = format!("{} Draw Two", o),
                     CardType::Number => {
                         if let Some(number) = self.number { 
-                            write!(f, "{:?} {:?}", self.colour, number)?;
+                           o = format!("{} {:?}", o, number);
                         }
-                        write!(f, "")
                     },
-                }
+                };
+
+                match self.colour {
+                    Colour::Red => write!(f, "{}", o.red())?,
+                    Colour::Green => write!(f, "{}", o.green())?,
+                    Colour::Blue => write!(f, "{}", o.blue())?,
+                    Colour::Yellow => write!(f, "{}", o.yellow())?,
+                    _ => (),
+                };
+                
+                write!(f, "")
             }
         }     
     }

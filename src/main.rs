@@ -4,6 +4,7 @@
 **/
 
 extern crate rand;
+extern crate colored;
 
 mod card;
 mod deck;
@@ -18,8 +19,6 @@ fn main() {
     let game = Game::new();
     let winner = game.game_loop();
 
-    // TODO congrats winner
-
-    println!("Winner: {}", winner);
+    println!("Congratulations {}!", winner);
 
 }

@@ -3,6 +3,7 @@ use card::*;
 
 use std::fmt;
 use util::*;
+use colored::*;
 
 #[derive(Debug)]
 pub struct Player {
@@ -74,10 +75,10 @@ impl Player {
 
     pub fn pick_colour() -> Colour {
         println!("You put down a Wild Card. You need to pick a colour.");
-        println!("\t0. Red");
-        println!("\t1. Green");
-        println!("\t2. Blue");
-        println!("\t3. Yellow");
+        println!("{}", "\t0. Red".red());
+        println!("{}", "\t1. Green".green());
+        println!("{}", "\t2. Blue".blue());
+        println!("{}", "\t3. Yellow".yellow());
 
         loop {
             match read_line().parse() {
