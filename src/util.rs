@@ -6,6 +6,5 @@ pub fn read_line() -> String {
     std::io::stdout().flush().unwrap();
     let mut input = String::new();
     std::io::stdin().read_line(&mut input).unwrap();
-    input.pop();
-    input
+    input.trim_end().to_string()
 }
