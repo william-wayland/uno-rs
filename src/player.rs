@@ -14,7 +14,7 @@ pub struct Player {
 
 impl Player {
     pub fn new(id: u8, name: String, deck: &mut Deck) -> Player {
-        Player{id: id, name: name, hand: deck.new_hand()}
+        Player{id, name, hand: deck.new_hand()}
     }
 
     pub fn has_cards(&self) -> bool {
@@ -29,11 +29,16 @@ impl Player {
             let input = read_line();
             if input == "s" {
                 return None;
+            }
+            else if input == "h" {
+                self.print_hand();
+                println!();
+                continue;
             } else {
-                match input.parse::<usize>() {
+                match input.parse::<i64>() {
                     Ok(input) => {
-                        if input < self.hand.len() {
-                            return Some(input)
+                        if input < self.hand.len() as i64 && input >= 0{
+                            return Some(input as usize)
                         } else { 
                             println!("Out of bounds. Choose a number in the list above.");
                             continue; 
