@@ -57,7 +57,8 @@ impl Game {
             
             match card.card_type {
                 CardType::Wild | CardType::WildFour => {
-                    stack.push(card);
+                    deck.reshuffle_with_card(card);
+                    continue;
                 },
                 _ => {
                     stack.push(card);
@@ -298,7 +299,7 @@ impl Game {
             Some(card) => card,
             None => {
                 let top = self.stack.pop().unwrap();
-                self.deck.reshuffle_deck(&mut self.stack);
+                self.deck.reshuffle_with_cards(&mut self.stack);
                 self.stack.push(top);
                 self.deck.get_card().unwrap()
             }

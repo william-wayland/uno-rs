@@ -1,7 +1,8 @@
-extern crate rand;
-use rand::prelude::*;
-
 use card::*;
+
+extern crate rand;
+use rand::thread_rng;
+use rand::seq::SliceRandom;
 
 #[derive(Debug)]
 pub struct Deck {
@@ -14,8 +15,7 @@ impl Deck {
 
         Deck::generate_cards(&mut cards);
 
-        let mut rng = rand::thread_rng();
-        cards.shuffle(&mut rng);
+        cards.shuffle(&mut rand::thread_rng());
 
         Deck{cards}
     }
@@ -65,9 +65,18 @@ impl Deck {
         self.cards.pop()
     }
 
-    pub fn reshuffle_deck(&mut self, discard_pile: &mut Vec<Card>) {
-        println!("Resuffing started {:?}", discard_pile);
-        self.cards.append(discard_pile);
+    pub fn reshuffle_with_card(&mut self, card: Card) {
+        self.cards.push(card);
+        self.reshuffle();
+    }
+
+    pub fn reshuffle_with_cards(&mut self, cards: &mut Vec<Card>) {
+        self.cards.append(cards);
+        self.reshuffle();
+    }
+
+    pub fn reshuffle(&mut self) {
+        self.cards.shuffle(&mut thread_rng());
     }
 
     // Fails if deck has run out of cards
