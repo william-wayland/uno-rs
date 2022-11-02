@@ -6,6 +6,7 @@ use std::fmt;
 use rand::{Rng, thread_rng};
 use util::*;
 
+#[allow(dead_code)] // for future feature where, as an option, a player can play after recieving a +n card.
 #[derive(Debug, PartialEq)]
 enum Turn {
     New, Again
@@ -56,7 +57,8 @@ impl Game {
             
             match card.card_type {
                 CardType::Wild | CardType::WildFour => {
-                    stack.push(card);
+                    deck.reshuffle_with_card(card);
+                    continue;
                 },
                 _ => {
                     stack.push(card);
@@ -237,9 +239,6 @@ impl Game {
 
     // Returns (if_legal, +pickup, )
     pub fn is_legal_move(stack: &Card, player: &Card, pickup: &Option<usize>) -> (bool, usize){
-        // TODO Should the move be allowed to happen?
-        // TODO chnage the colour of the card if it's black
-
         match player.card_type {
             CardType::WildFour => {
                 (true, 4)
@@ -300,7 +299,7 @@ impl Game {
             Some(card) => card,
             None => {
                 let top = self.stack.pop().unwrap();
-                self.deck.reshuffle_deck(&mut self.stack);
+                self.deck.reshuffle_with_cards(&mut self.stack);
                 self.stack.push(top);
                 self.deck.get_card().unwrap()
             }
